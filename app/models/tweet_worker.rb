@@ -1,5 +1,10 @@
 class TweetWorker
   include Sidekiq::Worker
+  sidekiq_options :retry => 5
+
+  sidekiq_retry_in do |count|
+    10 * (count + 1)
+  end
 
   def perform(tweet_id)
     tweet = Tweet.find(tweet_id)
@@ -7,7 +12,6 @@ class TweetWorker
     client = create_client(user)
     client.update(tweet.content)
   end
-
 
   def create_client(user)
     env_config = YAML.load_file(APP_ROOT.join('config', 'twitter.yaml'))

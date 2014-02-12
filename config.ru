@@ -8,8 +8,8 @@ configure do
   enable :sessions
   set :session_secret, ENV['SESSION_SECRET'] || 'this is a secret shhhhh'
 
-  # Set the views to 
+  # Set the views to
   set :views, File.join(Sinatra::Application.root, "app", "views")
 end
-
-run Sinatra::Application
+#run Sinatra::Application
+run Rack::URLMap.new('/'=>Sinatra::Application,'/sidekiq' => Sidekiq::Web)
